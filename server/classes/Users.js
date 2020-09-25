@@ -5,14 +5,14 @@ class Users {
     }
 
     addUser(id, name, room = '') {
-        const users = {id, name, room};
-        this.users.push(users);
+        const user = {id, name, room};
+        this.users.push(user);
 
         return this.users;
     }
 
     getUserById(id) {
-        return this.users.filter(users => users.id === id)[0];
+        return this.users.filter(user => user.id === id)[0];
     }
 
     getUsers() {
@@ -20,13 +20,14 @@ class Users {
     }
 
     getUsersByRoom(room) {
-        return this.users.filter(users => users.room === room);
+        return this.users.filter(user => user.room === room);
     }
 
     removeUser(id) {
+        console.log("remove user with id: ", id)
+        console.log("users actuals: ",this.users)
         const userRemoved = this.getUserById(id);
-        this.users = this.users.filter(users => users.id !== id);
-
+        this.users = this.users.filter(user => user.id !== id);
         return userRemoved;
     }
 

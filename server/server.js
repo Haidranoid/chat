@@ -7,14 +7,14 @@ const server = require('http').createServer(app);
 const socketServer = require('socket.io')(server);
 const publicPath = path.resolve(__dirname, '../public');
 
-app.use(cors({origin: 'http://localhost:2210'}));
-app.use(express.urlencoded({extended: false}));
-app.use(express.json());
-
 module.exports.socketServer = socketServer;
 require('./sockets/socketServer');
 
+app.use(cors({origin: 'http://localhost:2210'}));
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 app.use(express.static(publicPath));
+
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
     return res.sendFile(path.join(publicPath, 'index.html'), err => {
