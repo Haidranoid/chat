@@ -5,18 +5,24 @@ import {
     Route,
 } from "react-router-dom";
 import Home from "./home/Home";
-import useSocket from "../hooks/use-socket/useSocket";
+import socketClient from "../sockets/socketClient";
 
 const App = () => {
-    const socketClient = useSocket();
 
     useEffect(() => {
-        socketClient.on('connect', () => {
+        const handleConnected = () => {
             console.log("Connected to the server")
-        });
-        socketClient.on('disconnect', () => {
-            console.log("Disconnected from the server")
-        });
+        };
+        const handleDisconnected = () => {
+            console.log("Connected to the server")
+        };
+
+        socketClient.on('connect', handleConnected);
+        socketClient.on('disconnect', handleDisconnected);
+        return () => {
+            socketClient.off('connect', handleConnected);
+            socketClient.off('connect', handleDisconnected);
+        }
     }, []);
 
     return (

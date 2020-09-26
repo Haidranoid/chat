@@ -24,8 +24,6 @@ class Users {
     }
 
     removeUser(id) {
-        console.log("remove user with id: ", id)
-        console.log("users actuals: ",this.users)
         const userRemoved = this.getUserById(id);
         this.users = this.users.filter(user => user.id !== id);
         return userRemoved;

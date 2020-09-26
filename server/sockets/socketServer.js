@@ -8,6 +8,7 @@ socketServer.on("connection", client => {
 
     client.on('disconnect', () => {
         const userRemoved = users.removeUser(client.id);
+        console.log("Client disconnected")
         client.broadcast.emit('inbox', {user: 'Administrator', message: `${userRemoved.name} has disconnected`})
     });
 

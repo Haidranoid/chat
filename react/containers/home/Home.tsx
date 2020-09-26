@@ -1,16 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import useSocket from "../../hooks/use-socket/useSocket";
+import socketClient from "../../sockets/socketClient";
 import {useLocation} from "react-router-dom";
 import queryString from "query-string";
 
-interface user {
-    id: string,
-    name: string,
-    room: string,
-}
-
 const Home = () => {
-    const socketClient = useSocket();
     const location = useLocation().search;
     const query = queryString.parse(location);
 
@@ -19,10 +12,6 @@ const Home = () => {
 
     useEffect(() => {
 
-        socketClient.on('inbox', (message: any) => {
-            console.log(message);
-        });
-
         socketClient.emit('userLogged', {name: query.name}, (err: string, res: any) => {
             setLoading(false);
             if (err) {
@@ -30,9 +19,17 @@ const Home = () => {
                 setError(true);
                 return;
             }
-
-            console.log("users connected: ", res)
+            console.log("users connected: ", res);
         });
+
+        const handleInbox = (message: any) => {
+            console.log(message);
+        };
+
+        socketClient.on('inbox', handleInbox);
+        return () => {
+            socketClient.off('inbox', handleInbox);
+        }
     }, []);
 
     if (loading) return (
