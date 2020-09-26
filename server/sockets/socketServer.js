@@ -7,15 +7,35 @@ socketServer.on("connection", client => {
     console.log("Client connected");
 
     client.on('disconnect', () => {
+        console.log("Client disconnected");
         const userRemoved = users.removeUser(client.id);
-        console.log("Client disconnected")
-        client.broadcast.emit('inbox', {user: 'Administrator', message: `${userRemoved.name} has disconnected`})
+
+        if (userRemoved) {
+            client.broadcast.to(userRemoved.room).emit('public:message', {
+                user: 'Administrator',
+                message: `${userRemoved.name} has disconnected`
+            })
+        }
     });
 
-    client.on('userLogged', (user, callback) => {
-        if (!user.name) return callback('There is no name user');
+    client.on('user:logged', (user, callback) => {
+        if (!user.name || !user.room) return callback('There is no name user');
 
-        users.addUser(client.id, user.name);
-        callback(null, users.getUsers())
+        client.join(user.room);
+
+        users.addUser(client.id, user.name, user.room);
+
+        client.broadcast.to(user.room).emit('room:message', user);
+        callback(null, users.getUsersByRoom(user.room))
+    });
+
+    client.on('private:message', data => {
+        const user = users.getUserById(client.id);
+        if (user) {
+            client.broadcast.to(data.userId).emit('private:message', {
+                user: user.name,
+                message: 'mensaje privado'
+            })
+        }
     })
 });
